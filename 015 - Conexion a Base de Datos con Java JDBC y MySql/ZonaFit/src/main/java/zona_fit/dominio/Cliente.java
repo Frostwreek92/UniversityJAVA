@@ -3,17 +3,22 @@ package zona_fit.dominio;
 import java.util.Objects;
 
 public class Cliente {
+
+    // Atributos
     private int id;
     private String nombre;
     private String apellido;
     private int membresia;
 
+    // Constructor Vacío
     public Cliente(){}
 
+    // Constructor que recibe solo el ID
     public Cliente(int id){
         this.id = id;
     }
 
+    // Contructor con los datos sin ID
     public Cliente(String nombre, String apellido, int membresia) {
         this.nombre = nombre;
         this.apellido = apellido;
