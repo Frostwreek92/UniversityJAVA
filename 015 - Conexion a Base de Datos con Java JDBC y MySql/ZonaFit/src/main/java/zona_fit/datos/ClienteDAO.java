@@ -45,6 +45,30 @@ public class ClienteDAO implements IClienteDAO {
 
     @Override
     public boolean buscarClientePorId(Cliente cliente) {
+        PreparedStatement ps;
+        ResultSet rs;
+        Connection con = getConexion();
+        String sql = "SELECT * FROM cliente WHERE id = ?";
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, cliente.getId());
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                cliente.setNombre(rs.getString("nombre"));
+                cliente.setApellido(rs.getString("apellido"));
+                cliente.setMembresia(rs.getInt("membresia"));
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al recuperar cliente por ID: " + e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Error al cerra conexion: " + e.getMessage());
+            }
+        }
         return false;
     }
 
@@ -61,5 +85,25 @@ public class ClienteDAO implements IClienteDAO {
     @Override
     public boolean eliminarCliente(Cliente cliente) {
         return false;
+    }
+
+    public static void main(String[] args) {
+        // Listar clientes
+        System.out.println("*** Listar clientes ***");
+        /* Aquí se podría usar un var, pero para cumplir con los contratos creados, se utiliza la interfaz
+        * Así luego, puede reutilizarse para el resto de metodos que se han creado */
+        IClienteDAO clienteDao = new ClienteDAO();
+        var clientes = clienteDao.listarClientes();
+        clientes.forEach(System.out::println);
+
+        // Buscar por ID
+        var cliente1 = new Cliente(2);
+        System.out.println("Cliente antes de la busqueda: " + cliente1);
+        var encontrado = clienteDao.buscarClientePorId(cliente1);
+        if (encontrado) {
+            System.out.println("Cliente encontrado: " + cliente1);
+        } else {
+            System.out.println("No se encontro registro: " + cliente1.getId());
+        }
     }
 }
