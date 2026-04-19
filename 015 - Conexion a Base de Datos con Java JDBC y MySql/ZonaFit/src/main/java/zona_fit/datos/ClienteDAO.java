@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import static zona_fit.conexion.Conexion.getConexion;
 
@@ -148,42 +149,62 @@ public class ClienteDAO implements IClienteDAO {
         return false;
     }
 
-    public static void main(String[] args) {
+
+    static void listar (IClienteDAO clienteDao) {
         // Listar clientes
         System.out.println("*** Listar clientes ***");
         /* Aquí se podría usar un var, pero para cumplir con los contratos creados, se utiliza la interfaz
-        * Así luego, puede reutilizarse para el resto de metodos que se han creado */
-        IClienteDAO clienteDao = new ClienteDAO();
+         * Así luego, puede reutilizarse para el resto de metodos que se han creado */
         var clientes = clienteDao.listarClientes();
         clientes.forEach(System.out::println);
         System.out.println(); // Salto de linea vacio
-
+    }
+    static void buscarPorId(IClienteDAO clienteDao, Scanner scanner) {
         // Buscar por ID
         System.out.println("*** Buscar cliente por ID ***");
-        var cliente1 = new Cliente(2);
-        System.out.println("Cliente antes de la busqueda: " + cliente1);
-        var encontrado = clienteDao.buscarClientePorId(cliente1);
+        System.out.print("Introduce ID del cliente: ");
+        var idCliente = new Cliente(scanner.nextInt());
+        System.out.println("Cliente antes de la busqueda: " + idCliente);
+        var encontrado = clienteDao.buscarClientePorId(idCliente);
         if (encontrado) {
-            System.out.println("Cliente encontrado: " + cliente1);
+            System.out.println("Cliente encontrado: " + idCliente);
         } else {
-            System.out.println("No se encontro registro: " + cliente1.getId());
+            System.out.println("No se encontro registro: " + idCliente.getId());
         }
         System.out.println();
-
+    }
+    static void agregar(IClienteDAO clienteDao, Scanner scanner) {
         // Agregar cliente
         System.out.println("*** Agregar cliente ***");
-        var nuevoCliente = new Cliente("Daniel", "Ortiz", 300);
-                var agregado = clienteDao.agregarCliente(nuevoCliente);
+        System.out.print("Introduce nombre: ");
+        var nombre = scanner.nextLine();
+        System.out.print("Introduce apellido: ");
+        var apellido = scanner.nextLine();
+        System.out.print("Introduce membresia: ");
+        var membresia = scanner.nextInt();
+
+        var nuevoCliente = new Cliente(nombre, apellido, membresia);
+        var agregado = clienteDao.agregarCliente(nuevoCliente);
         if (agregado) {
             System.out.println("Cliente agregado: " + nuevoCliente);
         } else {
             System.out.println("No se agrego el cliente: " + nuevoCliente);
         }
         System.out.println();
-
+    }
+    static void modificar(IClienteDAO clienteDao, Scanner scanner) {
         // Modificar cliente
         System.out.println("*** Modificar cliente ***");
-        var modificarCliente = new Cliente(4, "Carlos Daniel", "Ortiz", 300);
+        System.out.print("Introduce ID del cliente a modificar: ");
+        var idCliente = scanner.nextInt();
+        System.out.print("Introduce nombre: ");
+        var nombre = scanner.nextLine();
+        System.out.print("Introduce apellido: ");
+        var apellido = scanner.nextLine();
+        System.out.print("Introduce membresia: ");
+        var membresia = scanner.nextInt();
+
+        var modificarCliente = new Cliente(idCliente, nombre, apellido, membresia);
         var modificado = clienteDao.modificarCliente(modificarCliente);
         if (modificado) {
             System.out.println("Cliente modificado: " + modificarCliente);
@@ -191,10 +212,13 @@ public class ClienteDAO implements IClienteDAO {
             System.out.println("No se modifico el cliente: " + modificarCliente);
         }
         System.out.println();
-
+    }
+    static void eliminar(IClienteDAO clienteDao, Scanner scanner) {
         // Eliminar cliente
         System.out.println("*** Eliminar cliente ***");
-        var clienteEliminar = new Cliente(4);
+        System.out.print("Selecciona el ID a eliminar: ");
+        var idClienteEliminar = scanner.nextInt();
+        var clienteEliminar = new Cliente(idClienteEliminar);
         var eliminado = clienteDao.eliminarCliente(clienteEliminar);
         if (eliminado) {
             System.out.println("Cliente eliminado: " + clienteEliminar);
@@ -202,4 +226,36 @@ public class ClienteDAO implements IClienteDAO {
             System.out.println("No se elimino cliente: " + clienteEliminar);
         }
     }
+
+    /* Aquí se ejecutaria el codigo creado por mi
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        IClienteDAO clienteDao = new ClienteDAO();
+        var salir = false;
+        int opcion;
+
+        while (!salir) {
+            System.out.println("1.Listar"
+            + "\n2.Buscar por ID"
+            + "\n3.Agregar"
+            + "\n4.Modificar"
+            + "\n5.Eliminar"
+            + "\n0. Salir");
+            System.out.print("Elige una opcion: ");
+            opcion = scanner.nextInt();
+            switch (opcion) {
+                case 1 -> listar(clienteDao);
+                case 2 -> buscarPorId(clienteDao, scanner);
+                case 3 -> agregar(clienteDao, scanner);
+                case 4 -> modificar(clienteDao, scanner);
+                case 5 -> eliminar(clienteDao, scanner);
+                case 0 -> {
+                        System.out.println("Saliendo...");
+                        salir = true;
+                }
+                default -> System.out.println("Escoge una de las opciones anteriores.");
+            }
+        }
+    }
+    */
 }
